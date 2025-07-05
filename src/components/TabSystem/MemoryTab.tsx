@@ -1,6 +1,8 @@
-import React from 'react';
-import { HardDrive, Layers, Play, Variable } from 'lucide-react';
+import React, { useState } from 'react';
+import { HardDrive, Layers, Play, Variable, BookOpen, Sparkles } from 'lucide-react';
 import Card from '../UI/Card';
+import MemoryDiagram from '../MemoryDiagram/MemoryDiagram';
+import AdventureMemoryDiagram from '../MemoryDiagram/AdventureMemoryDiagram';
 import type { MemoryExplanation } from '../../types';
 
 interface MemoryTabProps {
@@ -8,14 +10,53 @@ interface MemoryTabProps {
 }
 
 const MemoryTab: React.FC<MemoryTabProps> = ({ analysis }) => {
+  const [viewMode, setViewMode] = useState<'technical' | 'adventure'>('adventure');
   return (
     <div className="p-6 space-y-6">
-      {/* Main Description */}
-      <Card title="Memory Overview" icon={<HardDrive className="w-5 h-5" />}>
-        <p className="text-gray-700 leading-relaxed">
-          {analysis.description}
-        </p>
-      </Card>
+      {/* View Mode Toggle */}
+      <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-1">Memory Visualization</h3>
+          <p className="text-sm text-gray-600">Choose your learning style</p>
+        </div>
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('adventure')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              viewMode === 'adventure'
+                ? 'bg-purple-500 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Adventure Story</span>
+          </button>
+          <button
+            onClick={() => setViewMode('technical')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              viewMode === 'technical'
+                ? 'bg-blue-500 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Technical View</span>
+          </button>
+        </div>
+      </div>
+
+      {viewMode === 'adventure' ? (
+        /* Adventure Mode */
+        <AdventureMemoryDiagram analysis={analysis} />
+      ) : (
+        /* Technical Mode */
+        <>
+          {/* Main Description */}
+          <Card title="Memory Overview" icon={<HardDrive className="w-5 h-5" />}>
+            <p className="text-gray-700 leading-relaxed">
+              {analysis.description}
+            </p>
+          </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Variables */}
@@ -100,21 +141,10 @@ const MemoryTab: React.FC<MemoryTabProps> = ({ analysis }) => {
         </Card>
       )}
 
-      {/* Memory Visualization Placeholder */}
-      <Card title="Memory Diagram" icon={<HardDrive className="w-5 h-5" />}>
-        <div className="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-lg p-8 text-center">
-          <div className="w-16 h-16 bg-primary-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-            <HardDrive className="w-8 h-8 text-primary-600" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Visual Memory Diagram</h3>
-          <p className="text-gray-600 text-sm mb-4">
-            Interactive memory visualization showing how your code uses computer memory
-          </p>
-          <div className="text-xs text-gray-500 bg-white/50 rounded px-3 py-2 inline-block">
-            Coming in future updates: Interactive memory diagrams with animations
-          </div>
-        </div>
-      </Card>
+          {/* Interactive Memory Visualization */}
+          <MemoryDiagram analysis={analysis} />
+        </>
+      )}
     </div>
   );
 };
